@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Interactive Sphere</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+  <script>
+    // Set up the scene
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Create a sphere
+    var geometry = new THREE.SphereGeometry(1.75, 32, 32);
+    var textureLoader = new THREE.TextureLoader();
+    var texture = textureLoader.load('planet.jpg'); // Replace with your image path
+    var material = new THREE.MeshBasicMaterial({ map: texture });
+    var sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    // Position the sphere
+    sphere.position.x = 3.4;
+
+    // Position the camera
+    camera.position.z = 5;
+
+    // Mouse event listeners
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+    var isDragging = false;
+    var previousMouseX = 0;
+
+    function onPointerMove(event) {
+      event.preventDefault();
+
+      if (isDragging) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        // Rotate the sphere based on the mouse movement
+        var deltaRotationX = (mouse.y - previousMouseY) * 5; // Adjust rotation speed on the x-axis
+        var deltaRotationY = (mouse.x - previousMouseX) * 5; // Adjust rotation speed on the y-axis
+
+        sphere.rotation.x += deltaRotationX;
+        sphere.rotation.y += deltaRotationY;
+
+        previousMouseX = mouse.x;
+        previousMouseY = mouse.y;
+      }
+    }
+
+    function onPointerStart(event) {
+      event.preventDefault();
+
+      isDragging = true;
+
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      previousMouseX = mouse.x;
+      previousMouseY = mouse.y;
+
+      document.addEventListener('pointermove', onPointerMove);
+      document.addEventListener('pointerup', onPointerEnd);
+    }
+
+    function onPointerEnd() {
+      isDragging = false;
+
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerEnd);
+    }
+
+    document.addEventListener('pointerdown', onPointerStart);
+
+    // Animate the scene
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Rotate the sphere
+      sphere.rotation.x += 0.01; // Increase rotation speed on the x-axis
+      sphere.rotation.y += 0.01; // Increase rotation speed on the y-axis
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
